@@ -160,14 +160,6 @@ and the Admin bootstrap fix noted below) remains outstanding.
   `TournamentParticipants.jsx`, `TournamentList.jsx` all guard with `|| []`
   as defense in depth, even though the backend should never send `undefined`
   now.
-- **New: `backend/scripts/fixParticipants.js`** — a one-time repair script
-  (run via `npm run fix:participants` from `backend/`) that talks to the raw
-  MongoDB collection directly (bypassing Mongoose casting) so it can see the
-  true stored shape of every tournament document, and rewrites `participants`
-  into the flat-ID shape this schema expects — keeping only users whose
-  legacy status was `Accepted`. **Run this once against your real database**;
-  until you do, any tournament with corrupted data will refuse joins/
-  withdrawals/match-scheduling with a 409 rather than crash.
 - **Delete Tournament confirmation**: deleting a tournament (Organizer/Admin)
   no longer fires immediately on click — it now opens a confirmation modal
   (`ConfirmDeleteModal.jsx`) naming the tournament, since deletion also
@@ -203,14 +195,6 @@ and the Admin bootstrap fix noted below) remains outstanding.
   `MatchForm.jsx`'s participants prop) was updated for the new
   `{ user, status }` shape — accepted counts for capacity, status badges on
   the participant's own joined-tournaments views.
-- **`backend/scripts/fixParticipants.js` flipped direction again**: since
-  the schema now targets `{ user, status, joinedAt }`, the script normalizes
-  the opposite way from the previous pass — any flat ObjectId left over from
-  the simpler join model is wrapped as `{ user: id, status: 'Accepted' }`
-  (being in that old array meant an already-confirmed registration).
-  Already-correct subdocuments and missing/null are handled as before. Run
-  it again (`npm run fix:participants`) if you have tournaments predating
-  this change.
 
 ## Setup
 
@@ -229,7 +213,7 @@ PORT=5001
 Then run both servers together:
 
 ```bash
-npm run dev
+npm start
 ```
 
 Backend runs on `http://localhost:5001`, frontend on `http://localhost:3000`.
