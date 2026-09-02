@@ -1,6 +1,6 @@
 # Sports Tournament Scheduler
 
-A MERN-stack scaffold adapted from the `taskmanager` reference repo, mapped to the
+A scaffold adapted from the `taskmanager` reference repo, mapped to the
 Sport Tournament Scheduler requirement diagram (REQ-1 through REQ-5).
 
 ## What's reused from Taskmanager (unchanged or near-unchanged)
@@ -130,8 +130,6 @@ and the Admin bootstrap fix noted below) remains outstanding.
   Results/Upcoming Matches widgets shown in Figma; Admin Manage Users has no Suspend/Ban
   (only role change and delete — the design implies a status field the `User` model
   doesn't have). Full detail in the UI/UX Design Report.
-- A bug in the original `User.js` (`pre('save')` hook never called `next()`, which could hang
-  requests) has been fixed in this scaffold's version.
 - A gap in the Admin Dashboard was fixed: the role dropdown in Manage Users had no
   guard against an admin accidentally changing their own role (the delete button already
   correctly disabled itself for the current user, but the role selector didn't match it).
@@ -214,17 +212,6 @@ and the Admin bootstrap fix noted below) remains outstanding.
   it again (`npm run fix:participants`) if you have tournaments predating
   this change.
 
-## Changes in this pass (reconciled Match-participants null guards)
-- A parallel edit (made outside this conversation, on a copy of the app
-  taken before the accept/deny pass above) had added `(x.participants || [])`
-  guards around **Match** document participants — a different field from
-  `Tournament.participants` covered above — in `MatchForm.jsx`,
-  `RecordResultForm.jsx`, `ParticipantResults.jsx`, `ParticipantSchedule.jsx`,
-  `Home.jsx`, `ParticipantDashboard.jsx`, and `TournamentDetail.jsx`. This
-  pass merges those guards back in so both fixes are present together —
-  they don't conflict with the accept/deny work since they touch a
-  different field.
-
 ## Setup
 
 ```bash
@@ -250,12 +237,7 @@ Backend runs on `http://localhost:5001`, frontend on `http://localhost:3000`.
 ### Creating the first Admin account
 
 Register normally as an Organizer or Participant, then promote that user directly in
-MongoDB (there is no seed script yet):
-
-```js
-// mongosh, or MongoDB Compass
-db.users.updateOne({ email: "you@example.com" }, { $set: { role: "Admin" } })
-```
+MongoDB.
 
 Log out and back in for the new role to take effect (the JWT/role is set at login time).
 Every Admin after the first can be created through Manage Users instead.
